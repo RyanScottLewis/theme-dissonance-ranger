@@ -1,4 +1,4 @@
-# Dissonance Theme - Ranger
+# Dissonance Ranger Theme
 
 A theme for [Ranger][ranger] which utilizes the `ls` colors for more consistant styling.
 
