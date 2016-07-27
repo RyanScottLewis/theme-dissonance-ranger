@@ -96,10 +96,10 @@ namespace :release do
   end
 
   task :push do
-    log_message "Pushing Git tag #{PROJECT_VERSION}" do
+    log_message 'Pushing to Git' do
       check_git_tag_version
 
-      sh "git push origin #{PROJECT_VERSION}"
+      sh 'git push origin master --tags'
     end
   end
 
