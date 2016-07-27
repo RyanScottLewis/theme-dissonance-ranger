@@ -1,4 +1,4 @@
-# Dissonance Theme - Ranger
+# Dissonance Ranger Theme
 
 A theme for [Ranger][ranger] which utilizes the `ls` colors for more consistant styling.
 
@@ -17,5 +17,5 @@ TODO
 [Download the most recent release][download] and place in the `~/.config/ranger/colorschemes` directory.
 
 [ranger]: http://nongnu.org/ranger/
-[download]: https://raw.githubusercontent.com/RyanScottLewis/theme-dissonance-ranger/0.0.0/build/dissonance.py
+[download]: https://raw.githubusercontent.com/RyanScottLewis/theme-dissonance-ranger/0.0.1/lib/dissonance.py
 [theme-dissonance-iterm2]: https://github.com/RyanScottLewis/theme-dissonance-iterm2
