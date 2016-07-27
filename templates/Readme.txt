@@ -1,6 +1,6 @@
 # Dissonance Ranger Theme
 
-A theme for [Ranger][ranger] which utilizes the `ls` colors for more consistant styling.
+A theme for [Ranger][ranger] which utilizes the `ls` colors for more consistent styling.
 
 ## Screenshots
 
@@ -8,13 +8,11 @@ A theme for [Ranger][ranger] which utilizes the `ls` colors for more consistant 
 
 TODO
 
-### ITerm2 & Dark Background ITerm2 Preset
-
-TODO
-
 ## Install
 
 [Download the most recent release][download] and place in the `~/.config/ranger/colorschemes` directory.
+
+Then, use `set colorscheme dissonance` within `~/.config/ranger/rc.conf` (line ~85).
 
 [ranger]: http://nongnu.org/ranger/
 [download]: https://raw.githubusercontent.com/RyanScottLewis/theme-dissonance-ranger/%{version}/lib/dissonance.py
