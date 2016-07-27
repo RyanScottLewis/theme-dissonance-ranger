@@ -2,7 +2,7 @@ require 'pathname'
 require 'open3'
 
 def log_message(message)
-  print message
+  print("#{message}... ")
 
   begin
     yield
@@ -25,7 +25,7 @@ namespace :build do
     readme_data = template_data % { version: PROJECT_VERSION }
     readme_path = PROJECT_PATH.join('Readme.md')
 
-    log_message "Generating #{readme_path.relative_path_from(PROJECT_PATH)}... " do
+    log_message "Generating #{readme_path.relative_path_from(PROJECT_PATH)}" do
       readme_path.open('w+') { |file| file.puts(readme_data) }
     end
   end
@@ -71,6 +71,7 @@ task release: :build do
   end
 
   if current_tag != PROJECT_VERSION
+    log_message('Comitting to Git') { sh "git commit -am '#{PROJECT_VERSION}'" }
     log_message("Adding Git tag #{PROJECT_VERSION}") { sh "git tag #{PROJECT_VERSION}" }
     log_message("Pushing Git tag #{PROJECT_VERSION}") { sh "git push origin #{PROJECT_VERSION}" }
   else
