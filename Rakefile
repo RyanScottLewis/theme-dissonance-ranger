@@ -1,19 +1,23 @@
 require 'pathname'
 require 'open3'
 
-PROJECT_PATH = Pathname.new(__FILE__).dirname
+def log_message(message)
+  print message
 
-def get_current_version
-  current_tag, error, status = Open3.capture3('git describe --tags') # Use capture3 to capture stderr
-  current_tag = current_tag.strip
+  begin
+    yield
 
-  current_tag.empty? ? '0.0.0' : current_tag
+    puts 'OK'
+  rescue StandardError => e
+    puts 'FAIL'
+  end
 end
 
-PROJECT_VERSION = get_current_version
+PROJECT_PATH = Pathname.new(__FILE__).dirname
+PROJECT_VERSION = PROJECT_PATH.join('VERSION').read.strip
 
 namespace :build do
-  
+
   task :readme do
     template_path = PROJECT_PATH.join(*%w[templates Readme.txt])
     template_data = template_path.read
@@ -21,7 +25,9 @@ namespace :build do
     readme_data = template_data % { version: PROJECT_VERSION }
     readme_path = PROJECT_PATH.join('Readme.md')
 
-    readme_path.open('w+') { |file| file.puts(readme_data) }
+    log_message "Generating #{readme_path.relative_path_from(PROJECT_PATH)}... " do
+      readme_path.open('w+') { |file| file.puts(readme_data) }
+    end
   end
 
   task :header do
@@ -43,7 +49,9 @@ namespace :build do
 
     source_data = "#{header_data}\n#{source_data}"
 
-    source_path.open('w+') { |file| file.puts(source_data) }
+    log_message "Adding header to #{source_path.relative_path_from(PROJECT_PATH)}" do
+      source_path.open('w+') { |file| file.puts(source_data) }
+    end
   end
 
   task default: [:readme, :header]
@@ -51,3 +59,21 @@ end
 
 desc 'Build the project'
 task build: 'build:default'
+
+task release: :build do
+  current_tag = nil
+
+  log_message 'Getting current Git tag' do
+    output, error, status = Open3.capture3('git describe --tags') # Use capture3 to capture stderr
+    output = output.strip
+
+    current_tag = output unless output.empty?
+  end
+
+  if current_tag != PROJECT_VERSION
+    log_message("Adding Git tag #{PROJECT_VERSION}") { sh "git tag #{PROJECT_VERSION}" }
+    log_message("Pushing Git tag #{PROJECT_VERSION}") { sh "git push origin #{PROJECT_VERSION}" }
+  else
+    puts 'ERROR: Git tag and project version are the same'
+  end
+end
