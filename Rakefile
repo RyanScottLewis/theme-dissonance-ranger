@@ -8,13 +8,31 @@ def log_message(message)
     yield
 
     puts 'OK'
-  rescue StandardError => e
+  rescue StandardError => error
     puts 'FAIL'
+    puts
+
+    raise(error)
   end
 end
 
 PROJECT_PATH = Pathname.new(__FILE__).dirname
 PROJECT_VERSION = PROJECT_PATH.join('VERSION').read.strip
+
+def current_git_tag
+  return @current_git_tag unless @current_git_tag.nil?
+
+  output, error, status = Open3.capture3('git describe --tags') # Use capture3 to capture stderr
+  output = output.strip
+
+  @current_git_tag = output unless output.empty?
+
+  @current_git_tag
+end
+
+def check_git_tag_version
+  raise 'Git tag and project version are the same' if PROJECT_VERSION == current_git_tag
+end
 
 namespace :build do
 
@@ -60,21 +78,33 @@ end
 desc 'Build the project'
 task build: 'build:default'
 
-task release: :build do
-  current_tag = nil
+namespace :release do
+  task :commit do
+    log_message 'Comitting to Git' do
+      check_git_tag_version
 
-  log_message 'Getting current Git tag' do
-    output, error, status = Open3.capture3('git describe --tags') # Use capture3 to capture stderr
-    output = output.strip
-
-    current_tag = output unless output.empty?
+      sh "git commit -am '#{PROJECT_VERSION}'"
+    end
   end
 
-  if current_tag != PROJECT_VERSION
-    log_message('Comitting to Git') { sh "git commit -am '#{PROJECT_VERSION}'" }
-    log_message("Adding Git tag #{PROJECT_VERSION}") { sh "git tag #{PROJECT_VERSION}" }
-    log_message("Pushing Git tag #{PROJECT_VERSION}") { sh "git push origin #{PROJECT_VERSION}" }
-  else
-    puts 'ERROR: Git tag and project version are the same'
+  task :tag do
+    log_message "Adding Git tag #{PROJECT_VERSION}" do
+      check_git_tag_version
+
+      sh "git tag #{PROJECT_VERSION}"
+    end
   end
+
+  task :push do
+    log_message "Pushing Git tag #{PROJECT_VERSION}" do
+      check_git_tag_version
+
+      sh "git push origin #{PROJECT_VERSION}"
+    end
+  end
+
+  task default: [:build, :commit, :tag, :push]
 end
+
+desc 'Release the project'
+task release: 'release:default'
