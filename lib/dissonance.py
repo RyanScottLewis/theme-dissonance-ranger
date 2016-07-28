@@ -1,8 +1,8 @@
-# Dissonance Ranger Theme
-#
-# Created By: Ryan Scott Lewis <ryanscottlewis@gmail.com>
-# License: MIT
-# Version: 0.0.1
+## Dissonance Ranger Theme
+##
+## Created By: Ryan Scott Lewis <ryanscottlewis@gmail.com>
+## License: MIT
+## Version: 0.0.1
 
 from ranger.gui.colorscheme import ColorScheme
 from ranger.gui.color import *
